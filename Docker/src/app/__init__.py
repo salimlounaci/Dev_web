@@ -37,23 +37,27 @@ def delete(data_id):
 @app.route('/ajouter', methods=['GET', 'POST'])
 def ajouter():
     if request.method == 'POST':
-        # Récupérer les données du formulaire
         rna_id = request.form['rna_id']
         rna_id_ex = request.form['rna_id_ex']
         gestion = request.form['gestion']
-
-        # Créer une nouvelle instance de la classe Data avec les données du formulaire
         new_data = Data(rna_id=rna_id, rna_id_ex=rna_id_ex, gestion=gestion)
-
-        # Ajouter la nouvelle instance à la base de données
         db.session.add(new_data)
         db.session.commit()
-
-        # Rediriger l'utilisateur vers la page assos
         return redirect(url_for('assos'))
-
-    # Si la méthode est GET, afficher la page de formulaire
     return render_template('ajouter.html')
+
+@app.route('/modifier/<int:data_id>', methods=['GET', 'POST'])
+def modifier(data_id):
+    data = Data.query.get(data_id)
+
+    if request.method == 'POST':
+        data.rna_id = request.form['rna_id']
+        data.rna_id_ex = request.form['rna_id_ex']
+        data.gestion = request.form['gestion']
+        db.session.commit()
+        return redirect(url_for('assos'))
+    return render_template('modifier.html', data=data)
+
 
 
 @app.route('/hello')
