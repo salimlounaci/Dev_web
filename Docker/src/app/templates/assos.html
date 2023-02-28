@@ -11,7 +11,7 @@
             <th>RNA ID</th>
             <th>RNA ID EX</th>
             <th>Gestion</th>
-            <th>Supprimer</th> <!-- nouvelle colonne -->
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +22,7 @@
             <td>{{ data.rna_id_ex}}</td>
             <td>{{ data.gestion}}</td>
             <td>
-                <form action="{{ url_for('delete_data') }}" method="POST">
-                    <input type="hidden" name="data.id" value="{{ data.id }}">
-                    <button type="submit" class="btn">Supprimer</button>
-                </form>
+                <a href="{{ url_for('delete', data_id=data.id) }}" class="btn btn-danger btn-sm">Supprimer</a>
             </td>
         </tr>
         {% endfor %}
