@@ -58,6 +58,39 @@ def modifier(data_id):
         return redirect(url_for('assos'))
     return render_template('modifier.html', data=data)
 
+import json
+from flask import jsonify
+
+@app.route('/dashboard')
+def dashboard():
+    # récupère les données de la base de données
+    datas = Data.query.limit(30).all()
+
+    # traite les données pour les préparer pour le graphe
+    labels = []
+    data_gestion = []
+
+    for data in datas:
+        labels.append(data.rna_id)
+        data_gestion.append(data.gestion)
+
+    # génère les données pour le graphe
+    graph_data = {
+        "labels": labels,
+        "datasets": [{
+            "label": "Gestion des données",
+            "data": data_gestion,
+            "backgroundColor": "rgba(255, 99, 132, 0.2)",
+            "borderColor": "rgba(255, 99, 132, 1)",
+            "borderWidth": 1
+        }]
+    }
+
+    # convertit les données en JSON pour pouvoir les transmettre à la page HTML
+    json_data = json.dumps(graph_data)
+
+    # renvoie la page HTML avec les données pour le graphe
+    return render_template('dashboard.html', data=json_data)
 
 
 @app.route('/hello')

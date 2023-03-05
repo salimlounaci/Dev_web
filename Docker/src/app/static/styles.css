@@ -29,3 +29,30 @@ nav a {
     padding: 10px;
     display: block;
 }
+.btn-modifier {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-modifier:hover {
+    background-color: #0062cc;
+  }
+  
+  .btn-delete {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .btn-delete:hover {
+    background-color: #c82333;
+  }
