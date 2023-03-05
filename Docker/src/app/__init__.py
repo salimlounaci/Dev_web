@@ -26,7 +26,28 @@ def about():
 @app.route('/assos')
 def assos():
     datas = Data.query.limit(20).all()
-    return render_template('assos.html', datas=datas)
+
+    # Préparer les données pour le graphique en barre Chart.js
+    gestion_count = {}
+    for d in datas:
+        if d.gestion in gestion_count:
+            gestion_count[d.gestion] += 1
+        else:
+            gestion_count[d.gestion] = 1
+
+    gestion_values = list(gestion_count.values())
+    gestion_labels = list(gestion_count.keys())
+    bar_data = {
+        'values': gestion_values,
+        'labels': gestion_labels
+    }
+
+    # Préparer les données pour le graphique circulaire Chart.js
+    pie_data = {
+        'values': gestion_values,
+        'labels': gestion_labels
+    }
+    return render_template('assos.html', pie_data=json.dumps(pie_data), bar_data=json.dumps(bar_data), datas=datas)
 
 @app.route('/delete/<int:data_id>')
 def delete(data_id):
@@ -82,7 +103,4 @@ def dashboard():
 @app.route('/hello')
 @app.route('/hello/<name>')
 def hello(name=None):
-    return render_template('hello.html', name=name)
-
-if __name__ == '__main__':
-    app.run()
+    return

@@ -3,14 +3,18 @@
 {% block title %}<title>Statistiques</title>{% endblock %}
 
 {% block content %}
-  <h1>répartition des associations par gestion </h1>
-  <div style="width: 400px; height: 400px; text-align: center; margin: auto;">
-    <canvas id="myChart" width="400" height="400"></canvas>
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+  <h1 style="margin-top: 20px;">Répartition des associations par gestion et par catégorie</h1>
+  <div style="display: flex; justify-content: space-between; width: 800px; margin-top: 50px;">
+    <div style="width: 400px; height: 400px; text-align: center;">
+      <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+    <div style="width: 400px; height: 400px; text-align: center;">
+      <canvas id="myBarChart" width="400" height="400"></canvas>
+    </div>
   </div>
-  
-  
 
-  <!-- Le script qui va tracer le graphique -->
+  <!-- Le script qui va tracer le graphique en camembert et en barre -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     var data = JSON.parse('{{ graph_data|safe }}');
@@ -55,5 +59,45 @@
         }
       }
     });
+
+    var dataBar = JSON.parse('{{ graph_data|safe }}');
+    var ctxBar = document.getElementById('myBarChart').getContext('2d');
+    var myBarChart = new Chart(ctxBar, {
+      type: 'bar',
+      
+      data: {
+        labels: dataBar.labels,
+        datasets: [{
+          label: data.labels,
+          data: dataBar.values,
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#8E5EA2', '#3cba9f', '#e8c3b9'],
+          borderColor: '#333',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            fontColor: '#333',
+            fontSize: 14
+          }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+
+
   </script>
+
+
 {% endblock %}
