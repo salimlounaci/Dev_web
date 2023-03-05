@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -24,7 +25,7 @@ def about():
 
 @app.route('/assos')
 def assos():
-    datas = Data.query.limit(30).all()
+    datas = Data.query.limit(20).all()
     return render_template('assos.html', datas=datas)
 
 @app.route('/delete/<int:data_id>')
@@ -33,18 +34,6 @@ def delete(data_id):
     db.session.delete(data)
     db.session.commit()
     return redirect(url_for('assos'))
-
-@app.route('/ajouter', methods=['GET', 'POST'])
-def ajouter():
-    if request.method == 'POST':
-        rna_id = request.form['rna_id']
-        rna_id_ex = request.form['rna_id_ex']
-        gestion = request.form['gestion']
-        new_data = Data(rna_id=rna_id, rna_id_ex=rna_id_ex, gestion=gestion)
-        db.session.add(new_data)
-        db.session.commit()
-        return redirect(url_for('assos'))
-    return render_template('ajouter.html')
 
 @app.route('/modifier/<int:data_id>', methods=['GET', 'POST'])
 def modifier(data_id):
@@ -58,40 +47,37 @@ def modifier(data_id):
         return redirect(url_for('assos'))
     return render_template('modifier.html', data=data)
 
-import json
-from flask import jsonify
+@app.route('/ajouter', methods=['GET', 'POST'])
+def ajouter():
+    if request.method == 'POST':
+        rna_id = request.form['rna_id']
+        rna_id_ex = request.form['rna_id_ex']
+        gestion = request.form['gestion']
+        new_data = Data(rna_id=rna_id, rna_id_ex=rna_id_ex, gestion=gestion)
+        db.session.add(new_data)
+        db.session.commit()
+        return redirect(url_for('assos'))
+    return render_template('ajouter.html')
 
 @app.route('/dashboard')
 def dashboard():
-    # récupère les données de la base de données
-    datas = Data.query.limit(30).all()
+    datas = Data.query.all()
 
-    # traite les données pour les préparer pour le graphe
-    labels = []
-    data_gestion = []
+    # Préparer les données pour le graphique Chart.js
+    gestion_count = {}
+    for d in datas:
+        if d.gestion in gestion_count:
+            gestion_count[d.gestion] += 1
+        else:
+            gestion_count[d.gestion] = 1
 
-    for data in datas:
-        labels.append(data.rna_id)
-        data_gestion.append(data.gestion)
-
-    # génère les données pour le graphe
-    graph_data = {
-        "labels": labels,
-        "datasets": [{
-            "label": "Gestion des données",
-            "data": data_gestion,
-            "backgroundColor": "rgba(255, 99, 132, 0.2)",
-            "borderColor": "rgba(255, 99, 132, 1)",
-            "borderWidth": 1
-        }]
+    gestion_values = list(gestion_count.values())
+    gestion_labels = list(gestion_count.keys())
+    data = {
+        'values': gestion_values,
+        'labels': gestion_labels
     }
-
-    # convertit les données en JSON pour pouvoir les transmettre à la page HTML
-    json_data = json.dumps(graph_data)
-
-    # renvoie la page HTML avec les données pour le graphe
-    return render_template('dashboard.html', data=json_data)
-
+    return render_template('dashboard.html', graph_data=json.dumps(data))
 
 @app.route('/hello')
 @app.route('/hello/<name>')
