@@ -1,7 +1,9 @@
 # Dev_web
 
 Description du projet :
+
 Le projet consiste en une application web qui permet de récupérer les données de la base de données rna, puis de les afficher dans une interface. L'application web implémente un système de CRUD pour ajouter, supprimer et modifier les lignes de la base de données. L'application contient également un tableau de bord (dashboard) qui fournit des statistiques sur les données.
+
 le projet contient : 
    un fichier Docker file : qui crée une image Docker qui contiendra une application Python Flask.
    un fichier docker-compose :  configuration YAML
